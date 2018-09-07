@@ -7,6 +7,13 @@ import * as rjxComponents from './components';
 import * as rjxProps from './props';
 import * as rjxChildren from './children';
 import * as rjxUtils from './utils';
+
+if (typeof self == 'object' && self.self === self && self) {
+  window.React = React;
+  window.ReactDOM = ReactDOM;
+  window.ReactDOMServer = ReactDOMServer;
+}
+
 const createElement = React.createElement;
 const { componentMap, getComponentFromMap, getBoundedComponents, } = rjxComponents;
 const { getComputedProps, } = rjxProps;
@@ -82,7 +89,7 @@ export function getRenderedJSON(rjx = {}, resources = {}) {
     const displayElement = (rjx.comparisonprops)
       ? displayComponent.call(this, { rjx, props, renderIndex, componentLibraries, debug, })
       : true;
-    
+
     if (displayElement) {
       const children = getRJXChildren.call(this, { rjx, props, resources, renderIndex, });
       return createElement(element, props, children);
@@ -100,11 +107,11 @@ export function getRenderedJSON(rjx = {}, resources = {}) {
 
 /**
  * Use RJX for express view rendering
- * @param {string} filePath - path to rjx express view 
+ * @param {string} filePath - path to rjx express view
  * @param {object} options - property used for express view {locals}
  * @param {object} options.__boundConfig - property used to bind this object for RJX, can be used to add custom components
  * @param {string} [options.__DOCTYPE="<!DOCTYPE html>"] - html doctype string
- * @param {*} callback 
+ * @param {*} callback
  */
 export function __express(filePath, options, callback) {
   try {

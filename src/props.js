@@ -10,9 +10,9 @@ import { getComponentFromMap, } from './components';
 /**
  * It uses traverse on a traverseObject to returns a resolved object on propName. So if you're making an ajax call and want to pass properties into a component, you can assign them using asyncprops and reference object properties by an array of property paths
  * @param {Object} [traverseObject={}] - the object that contains values of propName
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
- * @param {Object} [options.propName='asyncprops'] - Property on RJX to resolve values onto, i.e (asyncprops,thisprops,windowprops) 
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
+ * @param {Object} [options.propName='asyncprops'] - Property on RJX to resolve values onto, i.e (asyncprops,thisprops,windowprops)
  * @returns {Object} resolved object
  * @example
  const traverseObject = {
@@ -91,8 +91,8 @@ export function getRJXProps(options = {}) {
 
 /**
  * Used to evalute javascript and set those variables as props. getEvalProps evaluates __dangerouslyEvalProps and __dangerouslyBindEvalProps properties with eval, this is used when component properties are functions, __dangerouslyBindEvalProps is used when those functions require that this is bound to the function. For __dangerouslyBindEvalProps it must resolve an expression, so functions should be wrapped in (). I.e. (function f(x){ return this.minimum+x;})
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
  * @returns {Object} returns resolved object with evaluated javascript
  * @example
  const testVals = {
@@ -129,9 +129,9 @@ export function getEvalProps(options = {}) {
 }
 
 /**
- * Resolves rjx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points. 
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * Resolves rjx.__dangerouslyInsertComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
  * @param {Object} [options.resources={}] - object to use for resourceprops(asyncprops), usually a result of an asynchronous call
  * @returns {Object} resolved object of React Components
  */
@@ -145,9 +145,9 @@ export function getComponentProps(options = {}) {
 }
 
 /**
- * Resolves rjx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points. 
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * Resolves rjx.__dangerouslyInsertReactComponents into an object that turns each value into a React components. This is typically used in a library like Recharts where you pass custom components for chart ticks or plot points.
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
 //  * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
  * @returns {Object} resolved object of React Components
  */
@@ -166,8 +166,8 @@ export function getReactComponentProps(options = {}) {
 
 /**
  * Takes a function string and returns a function on either this.props or window. The function can only be 2 levels deep
- * @param {Object} options 
- * @param {String} [options.propFunc='func:'] - function string, like func:window.LocalStorage.getItem or this.props.onClick 
+ * @param {Object} options
+ * @param {String} [options.propFunc='func:'] - function string, like func:window.LocalStorage.getItem or this.props.onClick
  * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, rjx.props, resourceprops, asyncprops, windowprops, evalProps, insertedComponents);
  * @returns {Function} returns a function from this.props or window functions
  * @example
@@ -177,7 +177,7 @@ export function getFunctionFromProps(options) {
   const { propFunc='func:', } = options;
   // eslint-disable-next-line
   const { logError = console.error,  debug, } = this;
-  const window = this.window || global.window || window;
+  const win = this.window || global || window;
 
   try {
     const functionNameString = propFunc.split(':')[ 1 ] || '';
@@ -187,21 +187,21 @@ export function getFunctionFromProps(options) {
     if (propFunc.indexOf('func:window') !== -1) {
       if (functionNameArray.length === 3) {
         try {
-          return window[ functionNameArray[ 1 ] ][ functionName ].bind(this);
+          return win[ functionNameArray[ 1 ] ][ functionName ].bind(this);
         } catch (e) {
           if (debug) {
             logError(e);
           }
-          return window[ functionNameArray[ 1 ] ][ functionName ];
+          return win[ functionNameArray[ 1 ] ][ functionName ];
         }
       } else {
         try {
-          return window[ functionName ].bind(this);
+          return win[ functionName ].bind(this);
         } catch (e) {
           if (debug) {
             logError(e);
           }
-          return window[ functionName ];
+          return win[ functionName ];
         }
       }
     } else if (functionNameArray.length === 4) {
@@ -221,8 +221,8 @@ export function getFunctionFromProps(options) {
 
 /**
  * Returns a resolved object from function strings that has functions pulled from rjx.__functionProps
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
  * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, rjx.props, asyncprops, windowprops, evalProps, insertedComponents);
  * @returns {Object} resolved object of functions from function strings
  */
@@ -234,31 +234,31 @@ export function getFunctionProps(options = {}) {
   Object.keys(funcProps).forEach(key => {
     if (typeof funcProps[key] ==='string' && funcProps[key].indexOf('func:') !== -1 ){
       allProps[ key ] = getFunction({ propFunc: funcProps[ key ], });
-    } 
+    }
   });
   return allProps;
 }
 
 /**
  * Returns a resolved object that has React Components pulled from window.__rjx_custom_elements
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
  * @param {Object} [options.allProps={}] - merged computed props, Object.assign({ key: renderIndex, }, thisprops, rjx.props, asyncprops, windowprops, evalProps, insertedComponents);
  * @returns {Object} resolved object of with React Components from a window property window.__rjx_custom_elements
  */
 export function getWindowComponents(options = {}) {
   const { allProps, rjx, } = options;
   const windowComponents = rjx.__windowComponents;
-  const window = this.window || window;
+  const win = this.window || global || window;
   const windowFuncPrefix = 'func:window.__rjx_custom_elements';
   // if (rjx.hasWindowComponent && window.__rjx_custom_elements) {
   Object.keys(windowComponents).forEach(key => {
     const windowKEY = (typeof windowComponents[ key ] === 'string')
       ? windowComponents[ key ].replace(`${windowFuncPrefix}.`, '')
       : '';
-    if (typeof windowComponents[ key ] === 'string' && windowComponents[ key ].indexOf(windowFuncPrefix) !== -1 && typeof window.__rjx_custom_elements[ windowKEY ] === 'function') {
-      const windowComponentElement = window.__rjx_custom_elements[ windowKEY ];
-      const windowComponentProps = (allProps[ '__windowComponentProps' ]) ? allProps[ '__windowComponentProps' ]
+    if (typeof windowComponents[ key ] === 'string' && windowComponents[ key ].indexOf(windowFuncPrefix) !== -1 && typeof win.__rjx_custom_elements[ windowKEY ] === 'function') {
+      const windowComponentElement = win.__rjx_custom_elements[ windowKEY ];
+      const windowComponentProps = (rjx[ '__windowComponentProps' ]) ? rjx[ '__windowComponentProps' ]
         : this.props;
       allProps[ key ] = React.createElement(
         windowComponentElement,
@@ -271,8 +271,8 @@ export function getWindowComponents(options = {}) {
 
 /**
  * Returns computed properties for React Components and any property that's prefixed with __ is a computedProperty
- * @param {Object} options 
- * @param {Object} options.rjx - Valid RJX JSON 
+ * @param {Object} options
+ * @param {Object} options.rjx - Valid RJX JSON
  * @param {Object} [options.resources={}] - object to use for asyncprops, usually a result of an asynchronous call
  * @param {Number} options.renderIndex - number used for React key prop
  * @param {function} [options.logError=console.error] - error logging function
@@ -286,7 +286,7 @@ const testRJX = { component: 'div',
   children: [ [Object] ],
   asyncprops: { auth: [Array], username: [Array] },
   __dangerouslyEvalProps: { getUsername: '(user={})=>user.name' },
-  __dangerouslyInsertComponents: { myComponent: [Object] } 
+  __dangerouslyInsertComponents: { myComponent: [Object] }
 const resources = {
   user: {
     name: 'rjx',
@@ -357,7 +357,7 @@ export function getComputedProps(options = {}) {
     const computedProps = Object.assign({}, allProps,
       rjx.__functionProps ? getFunctionProps.call(this, { allProps, rjx, }) : {},
       rjx.__windowComponents ? getWindowComponents.call(this, { allProps, rjx, }) : {});
-    
+
     return computedProps;
   } catch (e) {
     debug && logError(e, (e.stack) ? e.stack : 'no stack');
