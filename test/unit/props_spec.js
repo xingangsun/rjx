@@ -43,8 +43,8 @@ const traverseObject = {
   authentication: 'OAuth2',
 };
 
-describe('rjx props', function () { 
-  describe('getComputedProps', () => { 
+describe('rjx props', function () {
+  describe('getComputedProps', () => {
     const getComputedProps = rjx._rjxProps.getComputedProps;
     it('should return resolved computed props', () => {
       const dynamicprops = {
@@ -148,16 +148,16 @@ describe('rjx props', function () {
       };
       const allProps = {
         __windowComponents,
-        __windowComponentProps: {
-          name: 'from window',
-          title: 'pull it',
-        },
       };
       const testRJX = {
         component: 'div',
         children: 'hello world',
         __windowComponents: {
           useWelcome:'func:window.__rjx_custom_elements.Welcome',
+        },
+        __windowComponentProps: {
+          name: 'from window',
+          title: 'pull it',
         },
       };
       const thisProp = {
@@ -172,8 +172,8 @@ describe('rjx props', function () {
         rjx: testRJX,
       });
       expect(windowProps.useWelcome.type).to.eql(Welcome);
-      expect(windowProps.useWelcome.props.name).to.eql(allProps.__windowComponentProps.name);
-    });    
+      expect(windowProps.useWelcome.props.name).to.eql(testRJX.__windowComponentProps.name);
+    });
     after(function () {
       this.jsdom();
     });

@@ -95,7 +95,7 @@
             __dangerouslyEvalProps:{
               onClick:'()=>alert("click works")'
             },
-            children:'Hello RJX World!',
+            children:'Hello World!',
           },
           {
             component:'p',
@@ -106,7 +106,7 @@
               },
               {
                 component:'span',
-                
+
                 windowprops:{
                   _children:['location','href']
                 },
@@ -132,13 +132,13 @@
         ],
       };
       const boundConfig = {
-        debug:true, 
+        debug:true,
         reactComponents:{
           MyCustomComponent,
         }
       };
-      rjx.rjxRender.call(boundConfig,{ 
-        rjx: sampleRJX, 
+      rjx.rjxRender.call(boundConfig,{
+        rjx: sampleRJX,
         querySelector:'#root', });
     </script>
   </body>
